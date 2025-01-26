@@ -1,11 +1,11 @@
 import Joi from "joi";
 
 export const signUpValidator = Joi.object({
-    phone: Joi.string().required().min(10).max(10).messages({
-        'string.empty' : 'phone khong duoc de trong',
-        'any.required' : 'phone la bat buoc',
-        'string.min' : 'So dien thoai khong hop le',
-        'string.max' : 'So dien thoai khong hop le'
+    phone: Joi.string()
+    .pattern(/^0(?:3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-4|6-9])\d{7}$/)
+    .messages({
+      'string.pattern.base': 'So dien thoai khong hop le',
+      'string.empty': 'Số điện thoại không được để trống.',
     }),
     name: Joi.string().required().min(3).max(255).messages({
         'string.empty' : 'userName khong duoc de trong',
@@ -29,11 +29,11 @@ export const signUpValidator = Joi.object({
 })
 
 export const signInValidator = Joi.object({
-    phone: Joi.string().required().min(10).max(10).messages({
-        'string.empty' : 'userName khong duoc de trong',
-        'any.required' : 'userName la bat buoc',
-        'string.min' : 'userName phai co it nhat {#limit} ky tu',
-        'string.max' : 'userName phai co it hon {#limit} ky tu'
+    phone: Joi.string()
+    .pattern(/^0(?:3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-4|6-9])\d{7}$/)
+    .messages({
+      'string.pattern.base': 'So dien thoai khong hop le',
+      'string.empty': 'Số điện thoại không được để trống.',
     }),
     password: Joi.string().required().min(6).max(255).messages({
         'string.empty' : 'password khong duoc de trong',
