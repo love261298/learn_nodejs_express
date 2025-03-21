@@ -3,12 +3,15 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { authToken, signIn, signUp } from './controllers/auth.js';
 import { update } from './controllers/player.js';
+import cors from 'cors';
+
 dotenv.config();
 
 const app = express();
 mongoose.connect(process.env.URI_DB);
 
 app.use(express.json());
+app.use(cors());
 
 app.get('/test', async (req, res) => {
   res.send('HELLO WORD');

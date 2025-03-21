@@ -48,7 +48,6 @@ export const signIn = async (req, res) => {
       });
     }
     const user = await Player.findOne({ phone: req.body.phone });
-    console.log(user);
     if (!user) {
       return res.status(400).send({
         message: 'email nay chưa được đăng ký',
@@ -83,7 +82,6 @@ export const authToken = async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     const decoded = jwt.verify(token, process.env.SECRET_CODE);
     const point = await Player.findById(decoded._id);
-    console.log(point);
     if (point)
       return res.status(200).json({
         message: 'Dang nhap thanh cong',
