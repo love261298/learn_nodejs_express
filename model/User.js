@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const playerSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     phone: {
       type: String,
@@ -13,12 +13,12 @@ const playerSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    point: {
+    role: {
       type: String,
-      default: 0,
+      default: 'user',
     },
   },
   { versionKey: false, timestamps: true },
 );
 
-export default mongoose.model('Player', playerSchema);
+export default mongoose.model('User', userSchema, 'User');

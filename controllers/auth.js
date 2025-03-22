@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import dotenv from 'dotenv';
-import Player from '../model/Player.js';
-import { signInValidator, signUpValidator } from '../Validation/player.js';
+import User from '../model/User.js';
+import { signInValidator, signUpValidator } from '../Validation/user.js';
 dotenv.config();
 
 export const signUp = async (req, res) => {
@@ -10,28 +10,28 @@ export const signUp = async (req, res) => {
     const { error } = signUpValidator.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
-      return res.send({
+      return res.json({
         message: errors,
       });
     }
-    const userExists = await Player.findOne({ phone: req.body.phone });
+    const userExists = await User.findOne({ phone: req.body.phone });
     if (userExists) {
-      return res.status(400).send({
+      return res.status(400).json({
         message: 'Tai khoan da ton tai!',
       });
     }
     const hashedPassword = await bcryptjs.hash(req.body.password, 10);
-    const user = await Player.create({
+    const user = await User.create({
       ...req.body,
       password: hashedPassword,
     });
     user.password = undefined;
-    return res.status(200).send({
+    return res.status(200).json({
       message: 'Dang ky account thanh cong!',
       user,
     });
   } catch (error) {
-    return res.send({
+    return res.json({
       name: error.name,
       message: error.message,
     });
@@ -43,20 +43,20 @@ export const signIn = async (req, res) => {
     const { error } = signInValidator.validate(req.body, { abortEarly: false });
     if (error) {
       const errors = error.details.map((err) => err.message);
-      return res.status(400).send({
+      return res.status(400).json({
         message: errors,
       });
     }
-    const user = await Player.findOne({ phone: req.body.phone });
+    const user = await User.findOne({ phone: req.body.phone });
     if (!user) {
-      return res.status(400).send({
+      return res.status(400).json({
         message: 'email nay chưa được đăng ký',
       });
     }
     const isMatch = await bcryptjs.compare(req.body.password, user.password);
 
     if (!isMatch) {
-      return res.status(400).send({
+      return res.status(400).json({
         message: 'mat khau khong dung',
       });
     }
@@ -64,35 +64,12 @@ export const signIn = async (req, res) => {
       expiresIn: '1h',
     });
     user.password = undefined;
-    return res.status(200).send({
+    return res.status(200).json({
       message: 'Dang nhap thanh cong',
-      user,
       accessToken,
     });
   } catch (error) {
     return res.status(500).json({
-      name: error.name,
-      message: error.message,
-    });
-  }
-};
-
-export const authToken = async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.SECRET_CODE);
-    const point = await Player.findById(decoded._id);
-    if (point)
-      return res.status(200).json({
-        message: 'Dang nhap thanh cong',
-        auth: true,
-      });
-    return res.status(200).json({
-      message: 'Chua dang nhap',
-      auth: false,
-    });
-  } catch (error) {
-    return res.send({
       name: error.name,
       message: error.message,
     });
