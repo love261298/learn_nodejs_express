@@ -1,9 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
   {
     phone: {
       type: String,
       require: true,
+      unique: true,
     },
     name: {
       type: String,
@@ -15,10 +16,10 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: 'user',
+      default: "user",
     },
   },
-  { versionKey: false, timestamps: true },
+  { versionKey: false, timestamps: true }
 );
 
-export default mongoose.model('User', userSchema, 'User');
+export default mongoose.model("User", userSchema, "User");

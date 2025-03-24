@@ -1,8 +1,12 @@
 import User from "../model/User.js";
+import bcryptjs from "bcryptjs";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const getAll = async (req, res) => {
   try {
-    const user = (await User.find()).map(({ name, phone, role }) => ({
+    const user = (await User.find()).map(({ id, name, phone, role }) => ({
+      id,
       name,
       phone,
       role,
@@ -12,43 +16,77 @@ export const getAll = async (req, res) => {
     });
   } catch (e) {
     return res.json({
-      message: "Error fetching products:",
-      error: e.error,
+      message: "Lỗi khi lấy danh sách người dùng:",
+      error: e.message,
     });
   }
 };
 
-export const changeRole = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
-    if (req.body.role != "admin" && req.body.role != "user")
-      return res.json({
-        message: "Role khong hop le",
-      });
+    // Tìm và cập nhật thông tin người dùng
     const user = await User.findOneAndUpdate(
       { phone: req.body.phone },
-      { role: req.body.role },
-      {
-        new: true,
-      }
+      { $set: { name: req.body.name, role: req.body.role } },
+      { new: true } // Trả về dữ liệu sau khi cập nhật
     );
+
+    // Nếu không tìm thấy user
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    // Trả về kết quả cập nhật thành công
     return res.status(200).json({
       phone: user.phone,
       name: user.name,
       role: user.role,
     });
   } catch (e) {
-    return res.json({
-      message: "Error fetching products:",
-      error: e.error,
+    return res.status(500).json({
+      message: "Lỗi khi cập nhật thông tin người dùng",
+      error: e.message,
     });
   }
 };
 
-export const deletteUser = async (req, res) => {
+export const changePassword = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Người dùng chưa được xác thực" });
+    }
+    const isMatch = await bcryptjs.compare(
+      req.body.oldPassword,
+      req.user.password
+    );
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Mật khẩu cũ không chính xác",
+      });
+    }
+    if (req.body.newPassword !== req.body.newPasswordConfirm)
+      return res.status(400).json({
+        message: "Mật khẩu mới không khớp",
+      });
+    const hashedPassword = await bcryptjs.hash(req.body.newPassword, 10);
+    req.user.password = hashedPassword;
+    await req.user.save();
+    return res.status(200).json({
+      message: "Đổi mật khẩu thành công",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      name: error.name,
+      message: error.message,
+    });
+  }
+};
+export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    return res.json("xóa sản user thành công");
+    if (!user)
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    return res.json({ message: "Xóa người dùng thành công" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

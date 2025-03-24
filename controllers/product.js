@@ -3,13 +3,11 @@ import Product from "../model/Product.js";
 export const getProducts = async (req, res) => {
   try {
     const products = await Product.find().limit(9);
-    return res.status(200).json({
-      products,
-    });
+    return res.status(200).json({ products });
   } catch (e) {
-    return res.json({
-      message: "Error fetching products:",
-      error: e.error,
+    return res.status(500).json({
+      message: "Lỗi khi lấy danh sách sản phẩm",
+      error: e.message,
     });
   }
 };
@@ -17,37 +15,56 @@ export const getProducts = async (req, res) => {
 export const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (!product)
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
     return res.json(product);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res
+      .status(500)
+      .json({ message: "Lỗi khi lấy sản phẩm", error: err.message });
   }
 };
 
 export const createProduct = async (req, res) => {
   try {
     const { title, price } = req.body;
-    const imageData = req.file ? req.file.buffer : null;
-    const contentType = req.file ? req.file.mimetype : null;
+    if (!title || !price || isNaN(price) || price <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Vui lòng nhập tiêu đề và giá hợp lệ" });
+    }
 
     const newProduct = new Product({
       title,
       price,
-      imageData,
-      contentType,
+      imageData: req.file?.buffer || null,
+      contentType: req.file?.mimetype || null,
     });
+
     await newProduct.save();
     res.status(201).json(newProduct);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(400)
+      .json({ message: "Lỗi khi tạo sản phẩm", error: err.message });
   }
 };
 
 export const updateProduct = async (req, res) => {
   try {
     const { title, price } = req.body;
-    const updateData = { title, price };
+    if (
+      (price && (isNaN(price) || price <= 0)) ||
+      (!title && !price && !req.file)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Thông tin sản phẩm không hợp lệ" });
+    }
 
+    const updateData = {};
+    if (title) updateData.title = title;
+    if (price) updateData.price = price;
     if (req.file) {
       updateData.imageData = req.file.buffer;
       updateData.contentType = req.file.mimetype;
@@ -59,19 +76,27 @@ export const updateProduct = async (req, res) => {
       { new: true }
     );
     if (!updatedProduct)
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
 
     res.json(updatedProduct);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(400)
+      .json({ message: "Lỗi khi cập nhật sản phẩm", error: err.message });
   }
 };
+
 export const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
-    return res.json("xóa sản phảm thành công");
+    const product = await Product.findById(req.params.id);
+    if (!product)
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+
+    await product.deleteOne();
+    return res.json({ message: "Xóa sản phẩm thành công" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res
+      .status(500)
+      .json({ message: "Lỗi khi xóa sản phẩm", error: err.message });
   }
 };

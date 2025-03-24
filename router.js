@@ -1,6 +1,11 @@
 import express from "express";
-import { signUp, signIn } from "./controllers/auth.js";
-import { getAll, changeRole, deletteUser } from "./controllers/user.js";
+import { register, login } from "./controllers/auth.js";
+import {
+  getAll,
+  updateUser,
+  deleteUser,
+  changePassword,
+} from "./controllers/user.js";
 import verifyToken from "./Validation/verifyToken.js";
 import checkAdmin from "./Validation/checkAdmin.js";
 import multer from "multer";
@@ -15,16 +20,30 @@ import {
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
-router.post("/register", signUp);
-router.post("/login", signIn);
-router.get("/", verifyToken, checkAdmin, getAll);
-router.patch("/", verifyToken, checkAdmin, changeRole);
-router.delete("/:id", verifyToken, checkAdmin, deletteUser);
+//login-logout
+router.post("/register", register);
+router.post("/login", login);
+//user-router
+router.get("/user", verifyToken, getAll);
+router.put("/user/:phone", verifyToken, checkAdmin, updateUser);
+router.delete("/user/:id", verifyToken, checkAdmin, deleteUser);
+router.patch("/user", verifyToken, changePassword);
 //product-router
-router.get("/product", getProducts);
-router.get("/product/:id", getProductById);
-router.post("/product", upload.single("image"), createProduct);
-router.put("/product/:id", upload.single("image"), updateProduct);
-router.delete("/product/:id", deleteProduct);
+router.get("/product", verifyToken, getProducts);
+router.get("/product/:id", verifyToken, getProductById);
+router.post(
+  "/product",
+  verifyToken,
+  checkAdmin,
+  upload.single("image"),
+  createProduct
+);
+router.put(
+  "/product/:id",
+  verifyToken,
+  checkAdmin,
+  upload.single("image"),
+  updateProduct
+);
+router.delete("/product/:id", verifyToken, checkAdmin, deleteProduct);
 export default router;
