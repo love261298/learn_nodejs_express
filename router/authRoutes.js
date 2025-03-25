@@ -25,6 +25,9 @@ const router = express.Router();
  *               password:
  *                 type: string
  *                 example: "password123"
+ *               confirmPassword:
+ *                 type: string
+ *                 example: "password123"
  *     responses:
  *       201:
  *         description: Đăng ký tài khoản thành công
