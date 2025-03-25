@@ -10,7 +10,7 @@ import { verifyToken, checkAdmin } from "../Validation/index.js";
 const router = express.Router();
 /**
  * @swagger
- * /users:
+ * /user:
  *   get:
  *     summary: Lấy danh sách tất cả người dùng
  *     description: Trả về danh sách tất cả người dùng với các thông tin cơ bản
@@ -58,7 +58,7 @@ const router = express.Router();
 router.get("/user", verifyToken, getAll);
 /**
  * @swagger
- * /users:
+ * /user:
  *   put:
  *     summary: Cập nhật thông tin người dùng
  *     description: Cập nhật tên và vai trò của người dùng dựa trên số điện thoại
@@ -124,7 +124,7 @@ router.get("/user", verifyToken, getAll);
 router.put("/user/:phone", verifyToken, checkAdmin, updateUser);
 /**
  * @swagger
- * /users/{id}:
+ * /user/{id}:
  *   delete:
  *     summary: Xóa người dùng
  *     description: Xóa người dùng khỏi hệ thống bằng ID
@@ -172,7 +172,7 @@ router.put("/user/:phone", verifyToken, checkAdmin, updateUser);
 router.delete("/user/:id", verifyToken, checkAdmin, deleteUser);
 /**
  * @swagger
- * /users/change-password:
+ * /user/change-password:
  *   post:
  *     summary: Đổi mật khẩu người dùng
  *     description: Cho phép người dùng đổi mật khẩu khi đã xác thực

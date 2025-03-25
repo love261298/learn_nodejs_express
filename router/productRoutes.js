@@ -15,7 +15,7 @@ const upload = multer({ storage });
 
 /**
  * @swagger
- * /products:
+ * /product:
  *   get:
  *     summary: Lấy danh sách sản phẩm
  *     description: Trả về danh sách tối đa 9 sản phẩm
@@ -66,7 +66,7 @@ const upload = multer({ storage });
 router.get("/product", verifyToken, getProducts);
 /**
  * @swagger
- * /products/{id}:
+ * /product/{id}:
  *   get:
  *     summary: Lấy thông tin sản phẩm theo ID
  *     description: Trả về thông tin chi tiết của một sản phẩm dựa trên ID
@@ -129,7 +129,7 @@ router.get("/product", verifyToken, getProducts);
 router.get("/product/:id", verifyToken, getProductById);
 /**
  * @swagger
- * /products:
+ * /product:
  *   post:
  *     summary: Tạo mới một sản phẩm
  *     description: Tạo một sản phẩm mới với tiêu đề, giá và hình ảnh tùy chọn
@@ -209,7 +209,7 @@ router.post(
 );
 /**
  * @swagger
- * /products/{id}:
+ * /product/{id}:
  *   put:
  *     summary: Cập nhật thông tin sản phẩm
  *     description: Cho phép cập nhật tiêu đề, giá và hình ảnh của sản phẩm
@@ -306,7 +306,7 @@ router.put(
 );
 /**
  * @swagger
- * /products/{id}:
+ * /product/{id}:
  *   delete:
  *     summary: Xóa sản phẩm
  *     description: Xóa một sản phẩm dựa trên ID
