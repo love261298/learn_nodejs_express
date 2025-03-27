@@ -5,18 +5,22 @@ dotenv.config();
 
 export const getAll = async (req, res) => {
   try {
-    const user = (await User.find()).map(({ id, name, phone, role }) => ({
-      id,
-      name,
-      phone,
-      role,
-    }));
-    return res.status(200).json({
-      user,
-    });
+    const limit = 9;
+    const lastId = req.query.lastId;
+
+    let query = {};
+    if (lastId) {
+      query = { _id: { $gt: lastId } };
+    }
+
+    const users = await User.find(query)
+      .limit(limit)
+      .select("id name phone role");
+
+    return res.status(200).json({ users });
   } catch (e) {
-    return res.json({
-      message: "Lỗi khi lấy danh sách người dùng:",
+    return res.status(500).json({
+      message: "Lỗi khi lấy danh sách người dùng",
       error: e.message,
     });
   }
@@ -24,19 +28,14 @@ export const getAll = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    // Tìm và cập nhật thông tin người dùng
     const user = await User.findOneAndUpdate(
       { phone: req.body.phone },
       { $set: { name: req.body.name, role: req.body.role } },
-      { new: true } // Trả về dữ liệu sau khi cập nhật
+      { new: true }
     );
-
-    // Nếu không tìm thấy user
     if (!user) {
       return res.status(404).json({ message: "Không tìm thấy người dùng" });
     }
-
-    // Trả về kết quả cập nhật thành công
     return res.status(200).json({
       phone: user.phone,
       name: user.name,

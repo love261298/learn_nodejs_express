@@ -2,8 +2,16 @@ import Product from "../model/Product.js";
 
 export const getProducts = async (req, res) => {
   try {
-    res.setHeader("Content-Type", "application/json");
-    const products = await Product.find().limit(9);
+    const limit = 9;
+    const lastId = req.query.lastId;
+
+    let query = {};
+    if (lastId) {
+      query = { _id: { $gt: lastId } };
+    }
+
+    const products = await Product.find(query).limit(limit);
+
     return res.status(200).json({ products });
   } catch (e) {
     return res.status(500).json({

@@ -1,4 +1,4 @@
-import verifyToken from "./verifyToken";
-import checkAdmin from "./checkAdmin";
+import verifyToken from "./verifyToken.js";
+import checkAdmin from "./checkAdmin.js";
 
 export { verifyToken, checkAdmin };

@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import router from "./router/authRoutes.js";
+import router from "./router/index.js";
 import connectDB from "./db.js";
 import dotenv from "dotenv";
 import setupSwagger from "./swagger.js";
