@@ -28,9 +28,16 @@ export const getAll = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const user = await User.findOneAndUpdate(
-      { phone: req.body.phone },
-      { $set: { name: req.body.name, role: req.body.role } },
+    const id = req.params.id;
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          phone: req.body.phone,
+          name: req.body.name,
+          role: req.body.role,
+        },
+      },
       { new: true }
     );
     if (!user) {

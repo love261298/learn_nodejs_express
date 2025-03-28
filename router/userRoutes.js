@@ -121,7 +121,7 @@ router.get("/user", verifyToken, getAll);
  *                   type: string
  *                   example: "Internal Server Error"
  */
-router.put("/user/:phone", verifyToken, checkAdmin, updateUser);
+router.put("/user/:id", verifyToken, checkAdmin, updateUser);
 /**
  * @swagger
  * /user/{id}:
